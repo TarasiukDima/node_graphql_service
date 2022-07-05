@@ -22,6 +22,7 @@
     "graphql": "^16.5.0"
   },
   "devDependencies": {
+    "@graphql-tools/load-files": "^6.6.0",
     "@types/dotenv": "^8.2.0",
     "@types/node": "^18.0.0",
     "dotenv": "^16.0.1",

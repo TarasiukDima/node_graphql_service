@@ -1,0 +1,20 @@
+type JWT {
+  jwt: String
+}
+
+type User {
+  id: ID!
+  firstName: String
+  lastName: String
+  password: String
+  email: String
+}
+
+type Query {
+  userInfo(id: ID!): User
+}
+
+type Mutation {
+  registrationUser(firstName: String!, lastName: String!, email: String!, password: String!): User
+  loginUser(email: String!, password: String!): JWT
+}
