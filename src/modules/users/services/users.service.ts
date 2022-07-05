@@ -7,8 +7,8 @@ import {
 } from '../users.types';
 
 enum URL_POINTS {
-  login = 'login',
-  register = 'register',
+  login = '/login',
+  register = '/register',
 }
 
 export interface IUserService extends RESTDataSource {
@@ -29,7 +29,7 @@ class UsersService extends RESTDataSource implements IUserService {
   };
 
   userInfo = async (id: string): Promise<IUser> => {
-    const { _id, ...last } = await this.get(encodeURIComponent(id));
+    const { _id, ...last } = await this.get(`/${encodeURIComponent(id)}`);
 
     return { id: _id, ...last };
   };

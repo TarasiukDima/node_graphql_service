@@ -11,6 +11,28 @@ type Artist {
 }
 
 type Query {
-  artists(limit: Int, offset: Int): [Artist]
-  artist(id: ID!): Artist
+  getArtists(limit: Int, offset: Int): [Artist]
+  getArtist(id: ID!): Artist
+}
+
+input ArtistOptions {
+  firstName: String
+  secondName: String
+  middleName: String
+  birthDate: String
+  birthPlace: String
+  country: String
+  bands: [String]
+  instruments: [String]
+}
+
+type DeleteArtist {
+  acknowledged: Boolean
+  deletedCount: Int
+}
+
+type Mutation {
+  addArtist(inputOptions: ArtistOptions!): Artist
+  updateArtist(id: ID!, inputOptions: ArtistOptions!): Artist
+  removeArtist(id: ID!): DeleteArtist
 }
