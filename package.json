@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/TarasiukDima/node_graphql_service#readme",
   "dependencies": {
+    "apollo-datasource-rest": "^3.6.1",
     "apollo-server": "^3.9.0",
     "graphql": "^16.5.0"
   },
