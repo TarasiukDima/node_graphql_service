@@ -6,15 +6,22 @@ type User {
   id: ID!
   firstName: String
   lastName: String
-  password: String
   email: String
+  password: String
 }
 
 type Query {
   userInfo(id: ID!): User
 }
 
+input UserOptions {
+  firstName: String!
+  lastName: String!
+  email: String!
+  password: String!
+}
+
 type Mutation {
-  registrationUser(firstName: String!, lastName: String!, email: String!, password: String!): User
+  registrationUser(inputOptions: UserOptions!): User
   loginUser(email: String!, password: String!): JWT
 }

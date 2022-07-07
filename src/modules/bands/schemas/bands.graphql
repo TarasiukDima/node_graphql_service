@@ -3,8 +3,8 @@ type Band {
   name: String
   origin: String
   website: String
-  members: [Member]
-  genres: [Genre]
+  members: [Member!]
+  genres: [Genre!]
 }
 
 type Query {
@@ -13,18 +13,23 @@ type Query {
 }
 
 type Member {
-  id: ID!
-  artist: Artist
+  artist: Artist!
+  instrument: String
+  years: [String]
+}
+
+input MemberOptions {
+  artist: ID!
   instrument: String
   years: [String]
 }
 
 input BandOptions {
-  name: String
+  name: String!
   origin: String
   website: String
-  members: [String]
-  genres: [String]
+  members: [MemberOptions!]
+  genres: [ID!]
 }
 
 type DeleteBand {

@@ -18,19 +18,6 @@ export interface IAlbumOptions {
   image?: string;
 }
 
-export interface IAddAlbumOptions {
-  inputOptions: IAlbumOptions;
-}
-
-export interface IUpdateAlbumOptions extends IAddAlbumOptions{
-  id: number;
-}
-
-export interface IDeleteAlbumResponse {
-  acknowledged: boolean
-  deletedCount: number
-}
-
 export interface IAlbum {
   id: string;
   name: string;

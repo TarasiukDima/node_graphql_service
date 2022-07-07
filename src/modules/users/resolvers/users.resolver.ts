@@ -1,4 +1,4 @@
-import { IContext } from '../../../types/index';
+import { IAddAOptions, IContext } from '../../../types/index';
 import {
   ILoginUserOptions,
   IRegistrationUserOptions,
@@ -20,10 +20,12 @@ export const usersResolvers = {
   Mutation: {
     registrationUser: async (
       _: any,
-      options: IRegistrationUserOptions,
+      { inputOptions }: IAddAOptions<IRegistrationUserOptions>,
       { dataSources: { usersService } }: IContext
     ): Promise<IUser> => {
-      return await usersService.registrationUser(options);
+      console.log(inputOptions);
+
+      return await usersService.registrationUser(inputOptions);
     },
 
     loginUser: async (

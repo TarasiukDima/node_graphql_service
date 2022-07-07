@@ -1,18 +1,17 @@
-import { IContext } from '../../../types/index';
 import {
-  IAddAlbumOptions,
-  IAlbum,
-  IAlbumOptions,
-  IDeleteAlbumResponse,
-  IGetAlbumsOptions,
-  IUpdateAlbumOptions,
-} from '../albums.types';
+  IAddAOptions,
+  IContext,
+  IDeleteResponse,
+  IPaginationOptions,
+  IUpdateOptions,
+} from '../../../types/index';
+import { IAlbum, IAlbumOptions } from '../albums.types';
 
 export const albumsResolvers = {
   Query: {
     getAlbums: async (
       _: any,
-      options: IGetAlbumsOptions,
+      options: IPaginationOptions,
       { dataSources: { albumService } }: IContext
     ): Promise<Array<IAlbum>> => {
       return await albumService.getAlbums(options);
@@ -30,7 +29,7 @@ export const albumsResolvers = {
   Mutation: {
     addAlbum: async (
       _: any,
-      { inputOptions }: IAddAlbumOptions,
+      { inputOptions }: IAddAOptions<IAlbumOptions>,
       { token, dataSources: { albumService } }: IContext
     ): Promise<IAlbum | null> => {
       if (!token) {
@@ -42,7 +41,7 @@ export const albumsResolvers = {
 
     updateAlbum: async (
       _: any,
-      options: IUpdateAlbumOptions,
+      options: IUpdateOptions<IAlbumOptions>,
       { token, dataSources: { albumService } }: IContext
     ): Promise<IAlbum | null> => {
       if (!token) {
@@ -56,7 +55,7 @@ export const albumsResolvers = {
       _: any,
       { id }: IAlbum,
       { token, dataSources: { albumService } }: IContext
-    ): Promise<IDeleteAlbumResponse | null> => {
+    ): Promise<IDeleteResponse | null> => {
       if (!token) {
         return null;
       }

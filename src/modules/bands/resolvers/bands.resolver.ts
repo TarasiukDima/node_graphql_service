@@ -1,17 +1,17 @@
-import { IContext } from '../../../types/index';
 import {
-  IAddBandOptions,
-  IBand,
-  IDeleteBandResponse,
-  IGetBandsOptions,
-  IUpdateBandOptions,
-} from '../bands.types';
+  IAddAOptions,
+  IContext,
+  IDeleteResponse,
+  IPaginationOptions,
+  IUpdateOptions,
+} from '../../../types/index';
+import { IBand, IBandOptions } from '../bands.types';
 
 export const bandsResolvers = {
   Query: {
     getBands: async (
       _: any,
-      options: IGetBandsOptions,
+      options: IPaginationOptions,
       { dataSources: { bandsService } }: IContext
     ): Promise<Array<IBand>> => {
       return await bandsService.getBands(options);
@@ -29,7 +29,7 @@ export const bandsResolvers = {
   Mutation: {
     addBand: async (
       _: any,
-      { inputOptions }: IAddBandOptions,
+      { inputOptions }: IAddAOptions<IBandOptions>,
       { token, dataSources: { bandsService } }: IContext
     ): Promise<IBand | null> => {
       if (!token) {
@@ -41,7 +41,7 @@ export const bandsResolvers = {
 
     updateBand: async (
       _: any,
-      options: IUpdateBandOptions,
+      options: IUpdateOptions<IBandOptions>,
       { token, dataSources: { bandsService } }: IContext
     ): Promise<IBand | null> => {
       if (!token) {
@@ -55,7 +55,7 @@ export const bandsResolvers = {
       _: any,
       { id }: IBand,
       { token, dataSources: { bandsService } }: IContext
-    ): Promise<IDeleteBandResponse | null> => {
+    ): Promise<IDeleteResponse | null> => {
       if (!token) {
         return null;
       }

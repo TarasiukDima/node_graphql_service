@@ -13,6 +13,7 @@ enum URL_POINTS {
 
 export interface IUserService extends RESTDataSource {
   baseURL?: string | undefined;
+
   userInfo: (id: string) => Promise<IUser>;
   registrationUser: (options: IRegistrationUserOptions) => Promise<IUser>;
   loginUser: (options: ILoginUserOptions) => Promise<IUserTokenResponse>;

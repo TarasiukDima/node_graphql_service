@@ -18,10 +18,10 @@ input AlbumOptions {
   name: String!
   released: Int
   image: String
-  artists: [String]
-  bands: [String]
-  tracks: [String]
-  genres: [String]
+  artists: [ID!]
+  bands: [ID!]
+  tracks: [ID!]
+  genres: [ID!]
 }
 
 type DeleteAlbum {

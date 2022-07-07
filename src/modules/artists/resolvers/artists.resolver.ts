@@ -1,17 +1,17 @@
-import { IContext } from '../../../types/index';
 import {
-  IAddArtistOptions,
-  IArtist,
-  IDeleteArtistResponse,
-  IGetArtistsOptions,
-  IUpdateArtistOptions,
-} from '../artists.types';
+  IAddAOptions,
+  IContext,
+  IDeleteResponse,
+  IPaginationOptions,
+  IUpdateOptions,
+} from '../../../types/index';
+import { IArtist, IArtistOptions } from '../artists.types';
 
 export const artistsResolvers = {
   Query: {
     getArtists: async (
       _: any,
-      options: IGetArtistsOptions,
+      options: IPaginationOptions,
       { dataSources: { artistsService } }: IContext
     ): Promise<Array<IArtist>> => {
       return await artistsService.getArtists(options);
@@ -29,7 +29,7 @@ export const artistsResolvers = {
   Mutation: {
     addArtist: async (
       _: any,
-      { inputOptions }: IAddArtistOptions,
+      { inputOptions }: IAddAOptions<IArtistOptions>,
       { token, dataSources: { artistsService } }: IContext
     ): Promise<IArtist | null> => {
       if (!token) {
@@ -41,7 +41,7 @@ export const artistsResolvers = {
 
     updateArtist: async (
       _: any,
-      options: IUpdateArtistOptions,
+      options: IUpdateOptions<IArtistOptions>,
       { token, dataSources: { artistsService } }: IContext
     ): Promise<IArtist | null> => {
       if (!token) {
@@ -55,7 +55,7 @@ export const artistsResolvers = {
       _: any,
       { id }: IArtist,
       { token, dataSources: { artistsService } }: IContext
-    ): Promise<IDeleteArtistResponse | null> => {
+    ): Promise<IDeleteResponse | null> => {
       if (!token) {
         return null;
       }

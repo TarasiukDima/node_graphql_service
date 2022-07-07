@@ -1,21 +1,16 @@
 import { RequestOptions, RESTDataSource } from 'apollo-datasource-rest';
-import {
-  IArtist,
-  IArtistOptions,
-  IDeleteArtistResponse,
-  IGetArtistsOptions,
-  IUpdateArtistOptions,
-} from '../artists.types';
+import { IDeleteResponse, IPaginationOptions, IUpdateOptions } from 'src/types';
+import { IArtist, IArtistOptions } from '../artists.types';
 
 export interface IArtistsService extends RESTDataSource {
   baseURL?: string | undefined;
 
-  getArtists: (options: IGetArtistsOptions) => Promise<Array<IArtist>>;
+  getArtists: (options: IPaginationOptions) => Promise<Array<IArtist>>;
   getArtist: (id: string) => Promise<IArtist>;
 
   addArtist: (options: IArtistOptions) => Promise<IArtist>;
-  updateArtist: (options: IUpdateArtistOptions) => Promise<IArtist>;
-  removeArtist: (id: string) => Promise<IDeleteArtistResponse>;
+  updateArtist: (options: IUpdateOptions<IArtistOptions>) => Promise<IArtist>;
+  removeArtist: (id: string) => Promise<IDeleteResponse>;
 }
 
 class ArtistsService extends RESTDataSource implements IArtistsService {
@@ -28,7 +23,7 @@ class ArtistsService extends RESTDataSource implements IArtistsService {
     request.headers.set('Authorization', this.context.token);
   };
 
-  getArtists = async (options: IGetArtistsOptions): Promise<Array<IArtist>> => {
+  getArtists = async (options: IPaginationOptions): Promise<Array<IArtist>> => {
     const data = await this.get('', { ...options });
 
     const Artists = [...data.items].map((oneArtist) => {
@@ -51,13 +46,13 @@ class ArtistsService extends RESTDataSource implements IArtistsService {
     return { id: _id, ...last };
   };
 
-  updateArtist = async ({ id, inputOptions }: IUpdateArtistOptions): Promise<IArtist> => {
+  updateArtist = async ({ id, inputOptions }: IUpdateOptions<IArtistOptions>): Promise<IArtist> => {
     const { _id, ...last } = await this.put(`/${encodeURIComponent(id)}`, inputOptions);
 
     return { id: _id, ...last };
   };
 
-  removeArtist = async (id: string): Promise<IDeleteArtistResponse> => {
+  removeArtist = async (id: string): Promise<IDeleteResponse> => {
     const data = await this.delete(`/${encodeURIComponent(id)}`);
 
     return data;

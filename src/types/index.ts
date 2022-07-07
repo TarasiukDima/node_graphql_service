@@ -20,3 +20,23 @@ export interface IContext {
   token: string;
   dataSources: IServices;
 }
+
+export interface IPaginationOptions {
+  limit?: number;
+  offset?: number;
+}
+
+
+export interface IAddAOptions<T> {
+  inputOptions: T;
+}
+
+export interface IUpdateOptions<T> {
+  id: number;
+  inputOptions: T;
+}
+
+export interface IDeleteResponse {
+  acknowledged: boolean
+  deletedCount: number
+}
