@@ -1,4 +1,4 @@
-import { getBandsArray } from '../../utils/index';
+import { getArrayWithNotEmptyObjects, getBandsArray } from '../../utils/index';
 import {
   IAddAOptions,
   IContext,
@@ -31,13 +31,13 @@ const getArrayArtistsWithIdsObjects = async (
   array: Array<IArtistWithIDS>,
   dataSources: IServices
 ): Promise<Array<IArtist>> => {
-  const promisesAlbumsArray = array.map(
-    async (oneArtist) => await getArtistInfoObjects(oneArtist, dataSources)
+  const promisesAlbumsArray = array.map((oneArtist) =>
+    getArtistInfoObjects(oneArtist, dataSources)
   );
   const albumsAnswers = await Promise.allSettled(promisesAlbumsArray);
-  const newAlbums = albumsAnswers.map((res) => (res.status === 'fulfilled' ? res.value : null));
+  const newAlbums = getArrayWithNotEmptyObjects<IArtist>(albumsAnswers, 'id');
 
-  return newAlbums.filter((el) => el) as Array<IArtist>;
+  return newAlbums;
 };
 
 export const artistsResolvers = {
@@ -48,9 +48,9 @@ export const artistsResolvers = {
       { dataSources }: IContext
     ): Promise<Array<IArtist>> => {
       const artistsWithIds = await dataSources.artistsService.getArtists(options);
-      const albums = await getArrayArtistsWithIdsObjects(artistsWithIds, dataSources);
+      const artists = await getArrayArtistsWithIdsObjects(artistsWithIds, dataSources);
 
-      return albums;
+      return artists;
     },
 
     getArtist: async (

@@ -33,11 +33,7 @@ export const genresResolvers = {
       { inputOptions }: IAddAOptions<IGenreOptions>,
       { token, dataSources: { genresService } }: IContext
     ): Promise<IGenre | null> => {
-      if (!token) {
-        return null;
-      }
-
-      return await genresService.addGenre(inputOptions);
+      return !token ? null : await genresService.addGenre(inputOptions);
     },
 
     updateGenre: async (
@@ -45,11 +41,7 @@ export const genresResolvers = {
       options: IUpdateOptions<IGenreOptions>,
       { token, dataSources: { genresService } }: IContext
     ): Promise<IGenre | null> => {
-      if (!token) {
-        return null;
-      }
-
-      return await genresService.updateGenre(options);
+      return !token ? null : await genresService.updateGenre(options);
     },
 
     removeGenre: async (
@@ -57,11 +49,7 @@ export const genresResolvers = {
       { id }: IGenre,
       { token, dataSources: { genresService } }: IContext
     ): Promise<IDeleteResponse | null> => {
-      if (!token) {
-        return null;
-      }
-
-      return await genresService.removeGenre(id);
+      return !token ? null : await genresService.removeGenre(id);
     },
   },
 };

@@ -1,4 +1,9 @@
-import { getAlbumsArray, getBandsArray, getGenresArray } from '../../utils/index';
+import {
+  getAlbumsArray,
+  getArrayWithNotEmptyObjects,
+  getBandsArray,
+  getGenresArray,
+} from '../../utils/index';
 import {
   IAddAOptions,
   IContext,
@@ -33,10 +38,10 @@ const getArrayTracksWithIdsObjects = async (
   const promisesTracksArray = array.map(
     async (oneTrack) => await getTrackInfoObjects(oneTrack, dataSources)
   );
-  const TracksAnswers = await Promise.allSettled(promisesTracksArray);
-  const newTracks = TracksAnswers.map((res) => (res.status === 'fulfilled' ? res.value : null));
+  const tracksAnswers = await Promise.allSettled(promisesTracksArray);
+  const newTracks = getArrayWithNotEmptyObjects<ITrack>(tracksAnswers, 'id');
 
-  return newTracks.filter((el) => el) as Array<ITrack>;
+  return newTracks;
 };
 
 export const tracksResolvers = {

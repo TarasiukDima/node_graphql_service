@@ -1,4 +1,4 @@
-import { getGenresArray, getMembersArray } from '../../utils/index';
+import { getArrayWithNotEmptyObjects, getGenresArray, getMembersArray } from '../../utils/index';
 import {
   IAddAOptions,
   IContext,
@@ -18,8 +18,8 @@ const getBandInfoObjects = async (
     id: oneBand.id,
     name: oneBand.name,
     origin: oneBand.origin,
-    members: await getMembersArray(oneBand.members, dataSources),
     website: oneBand.website,
+    members: await getMembersArray(oneBand.members, dataSources),
     genres: await getGenresArray(oneBand.genres, dataSources.genresService),
   };
 };
@@ -32,9 +32,9 @@ const getArrayBandsWithIdsObjects = async (
     async (oneBand) => await getBandInfoObjects(oneBand, dataSources)
   );
   const bandsAnswers = await Promise.allSettled(promisesBandsArray);
-  const newBands = bandsAnswers.map((res) => (res.status === 'fulfilled' ? res.value : null));
+  const newBands = getArrayWithNotEmptyObjects<IBand>(bandsAnswers, 'id');
 
-  return newBands.filter((el) => el) as Array<IBand>;
+  return newBands;
 };
 
 export const bandsResolvers = {

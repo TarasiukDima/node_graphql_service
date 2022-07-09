@@ -3,19 +3,19 @@ import { IArtistsService } from '../artists/services/artists.service';
 import { IBandsService } from '../bands/services/bands.service';
 import { IGenresService } from '../genres/services/genres.service';
 import { ITracksService } from '../tracks/services/tracks.service';
+import { albumsResolvers } from '../albums/resolvers/albums.resolver';
+import { artistsResolvers } from '../artists/resolvers/artists.resolver';
+import { bandsResolvers } from '../bands/resolvers/bands.resolver';
+import { genresResolvers } from '../genres/resolvers/genres.resolver';
+import { tracksResolvers } from '../tracks/resolvers/tracks.resolver';
 import { IAlbum } from '../albums/albums.types';
 import { IArtist } from '../artists/artists.types';
 import { IBand, IMember } from '../bands/bands.types';
 import { IGenre } from '../genres/genres.types';
 import { ITrack } from '../tracks/track.types';
 import { IContext, IServices } from 'src/types';
-import { genresResolvers } from '../genres/resolvers/genres.resolver';
-import { albumsResolvers } from '../albums/resolvers/albums.resolver';
-import { artistsResolvers } from '../artists/resolvers/artists.resolver';
-import { tracksResolvers } from '../tracks/resolvers/tracks.resolver';
-import { bandsResolvers } from '../bands/resolvers/bands.resolver';
 
-const getArrayWithNotEmptyObjects = <T>(
+export const getArrayWithNotEmptyObjects = <T>(
   array: Array<PromiseSettledResult<T>>,
   key: string
 ): Array<T> => {
@@ -31,11 +31,11 @@ const getArrayWithNotEmptyObjects = <T>(
 const getAlbums = async (array: Array<string>, service: IServices): Promise<Array<IAlbum>> => {
   if (!array || !array.length) return [];
 
-  const genres = array.map(
+  const albums = array.map(
     async (id) =>
       await albumsResolvers.Query.getAlbum(null, { id }, { dataSources: service } as IContext)
   );
-  const albumsAllInfo = await Promise.allSettled(genres);
+  const albumsAllInfo = await Promise.allSettled(albums);
   const bandsFull = getArrayWithNotEmptyObjects<IAlbum>(albumsAllInfo, 'id');
 
   return bandsFull;

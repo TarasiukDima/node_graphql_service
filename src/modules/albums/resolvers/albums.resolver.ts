@@ -1,4 +1,4 @@
-import { getArtistsArray, getBandsArray, getGenresArray, getTracksArray } from '../../utils/index';
+import { getArrayWithNotEmptyObjects, getArtistsArray, getBandsArray, getGenresArray, getTracksArray } from '../../utils/index';
 import {
   IAddAOptions,
   IContext,
@@ -32,11 +32,9 @@ const getArrayWithIdsObjects = async (
     async (oneAlbum) => await getInfoObjects(oneAlbum, dataSources)
   );
   const albumsAnswers = await Promise.allSettled(promisesAlbumsArray);
-  const newAlbums = albumsAnswers.map((res) =>
-    res.status === 'fulfilled' && res.value.id ? res.value : null
-  );
+  const newAlbums = getArrayWithNotEmptyObjects(albumsAnswers, 'id')
 
-  return newAlbums.filter((el) => el) as Array<IAlbum>;
+  return newAlbums;
 };
 
 export const albumsResolvers = {
