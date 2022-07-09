@@ -10,7 +10,7 @@ export interface IArtistOptions {
   image?: string;
 }
 
-export interface IArtist {
+interface ICommonArtist {
   id: string;
   firstName: string;
   secondName: string;
@@ -18,6 +18,13 @@ export interface IArtist {
   birthDate: string;
   birthPlace: string;
   country: string;
-  bands: IBand;
   instruments: Array<string>;
+}
+
+export interface IArtist extends ICommonArtist {
+  bands: Array<IBand | string>;
+}
+
+export interface IArtistWithIDS extends ICommonArtist {
+  bands: Array<string>;
 }

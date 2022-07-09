@@ -1,16 +1,27 @@
 import { RequestOptions, RESTDataSource } from 'apollo-datasource-rest';
 import { IDeleteResponse, IPaginationOptions, IUpdateOptions } from '../../../types/index';
-import { IAlbum, IAlbumOptions } from '../albums.types';
+import { IAlbumOptions, IAlbumWithIDS } from '../albums.types';
 
 export interface IAlbumService extends RESTDataSource {
   baseURL?: string | undefined;
 
-  getAlbums: (options: IPaginationOptions) => Promise<Array<IAlbum>>;
-  getAlbum: (id: string) => Promise<IAlbum>;
+  getAlbums: (options: IPaginationOptions) => Promise<Array<IAlbumWithIDS>>;
+  getAlbum: (id: string) => Promise<IAlbumWithIDS>;
 
-  addAlbum: (options: IAlbumOptions) => Promise<IAlbum>;
-  updateAlbum: (options: IUpdateOptions<IAlbumOptions>) => Promise<IAlbum>;
+  addAlbum: (options: IAlbumOptions) => Promise<IAlbumWithIDS>;
+  updateAlbum: (options: IUpdateOptions<IAlbumOptions>) => Promise<IAlbumWithIDS>;
   removeAlbum: (id: string) => Promise<IDeleteResponse>;
+}
+
+interface IAlbumResponse {
+  _id: string;
+  name: string;
+  released: number;
+  image: string;
+  artistsIds: Array<string>;
+  bandsIds: Array<string>;
+  trackIds: Array<string>;
+  genresIds: Array<string>;
 }
 
 class AlbumService extends RESTDataSource implements IAlbumService {
@@ -23,39 +34,49 @@ class AlbumService extends RESTDataSource implements IAlbumService {
     request.headers.set('Authorization', this.context.token);
   };
 
-  getAlbums = async (options: IPaginationOptions): Promise<Array<IAlbum>> => {
-    const data = await this.get('', { ...options });
+  private changeAlbumKeysName = (object: IAlbumResponse): IAlbumWithIDS => {
+    return {
+      id: object._id,
+      name: object.name,
+      released: object.released,
+      artists: object.artistsIds,
+      bands: object.bandsIds,
+      tracks: object.trackIds,
+      genres: object.genresIds,
+      image: object.image,
+    };
+  };
 
-    const albums = [...data.items].map((oneAlbum) => {
-      oneAlbum.id = oneAlbum._id;
-      return oneAlbum;
-    });
+  getAlbums = async (options: IPaginationOptions): Promise<Array<IAlbumWithIDS>> => {
+    const data = await this.get('', { ...options });
+    const albums = [...data.items].map((oneAlbum) => this.changeAlbumKeysName(oneAlbum));
 
     return albums;
   };
 
-  getAlbum = async (id: string): Promise<IAlbum> => {
-    const { _id, ...last } = await this.get(`/${encodeURIComponent(id)}`);
+  getAlbum = async (id: string): Promise<IAlbumWithIDS> => {
+    const album = await this.get(`/${encodeURIComponent(id)}`);
 
-    return { id: _id, ...last };
+    return this.changeAlbumKeysName(album);
   };
 
-  addAlbum = async (options: IAlbumOptions): Promise<IAlbum> => {
-    const { _id, ...last } = await this.post('', options);
+  addAlbum = async (options: IAlbumOptions): Promise<IAlbumWithIDS> => {
+    const album = await this.post('', options);
 
-    return { id: _id, ...last };
+    return this.changeAlbumKeysName(album);
   };
 
-  updateAlbum = async ({ id, inputOptions }: IUpdateOptions<IAlbumOptions>): Promise<IAlbum> => {
-    const { _id, ...last } = await this.put(`/${encodeURIComponent(id)}`, inputOptions);
+  updateAlbum = async ({
+    id,
+    inputOptions,
+  }: IUpdateOptions<IAlbumOptions>): Promise<IAlbumWithIDS> => {
+    const album = await this.put(`/${encodeURIComponent(id)}`, inputOptions);
 
-    return { id: _id, ...last };
+    return this.changeAlbumKeysName(album);
   };
 
   removeAlbum = async (id: string): Promise<IDeleteResponse> => {
-    const data = await this.delete(`/${encodeURIComponent(id)}`);
-
-    return data;
+    return await this.delete(`/${encodeURIComponent(id)}`);
   };
 }
 

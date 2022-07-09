@@ -1,16 +1,26 @@
 import { RequestOptions, RESTDataSource } from 'apollo-datasource-rest';
-import { IDeleteResponse, IPaginationOptions, IUpdateOptions } from 'src/types';
-import { ITrack, ITrackOptions } from '../track.types';
+import { IDeleteResponse, IPaginationOptions, IUpdateOptions } from '../../../types/index';
+import { ITrackOptions, ITrackWithIds } from '../track.types';
 
 export interface ITracksService extends RESTDataSource {
   baseURL?: string | undefined;
 
-  getTracks: (options: IPaginationOptions) => Promise<Array<ITrack>>;
-  getTrack: (id: string) => Promise<ITrack>;
+  getTracks: (options: IPaginationOptions) => Promise<Array<ITrackWithIds>>;
+  getTrack: (id: string) => Promise<ITrackWithIds>;
 
-  addTrack: (options: ITrackOptions) => Promise<ITrack>;
-  updateTrack: (options: IUpdateOptions<ITrackOptions>) => Promise<ITrack>;
+  addTrack: (options: ITrackOptions) => Promise<ITrackWithIds>;
+  updateTrack: (options: IUpdateOptions<ITrackOptions>) => Promise<ITrackWithIds>;
   removeTrack: (id: string) => Promise<IDeleteResponse>;
+}
+
+interface ITrackResponse {
+  _id: string;
+  title: string;
+  duration: number;
+  released: number;
+  albumsIds: Array<string>;
+  bandsIds: Array<string>;
+  genresIds: Array<string>;
 }
 
 class TracksService extends RESTDataSource implements ITracksService {
@@ -23,39 +33,48 @@ class TracksService extends RESTDataSource implements ITracksService {
     request.headers.set('Authorization', this.context.token);
   };
 
-  getTracks = async (options: IPaginationOptions): Promise<Array<ITrack>> => {
+  private changeTrackKeysName = (object: ITrackResponse): ITrackWithIds => {
+    return {
+      id: object._id,
+      title: object.title,
+      duration: object.duration,
+      released: object.released,
+      albums: object.albumsIds,
+      bands: object.bandsIds,
+      genres: object.genresIds,
+    };
+  };
+
+  getTracks = async (options: IPaginationOptions): Promise<Array<ITrackWithIds>> => {
     const data = await this.get('', { ...options });
+    const tracks = [...data.items].map((oneAlbum) => this.changeTrackKeysName(oneAlbum));
 
-    const Tracks = [...data.items].map((oneTrack) => {
-      oneTrack.id = oneTrack._id;
-      return oneTrack;
-    });
-
-    return Tracks;
+    return tracks;
   };
 
-  getTrack = async (id: string): Promise<ITrack> => {
-    const { _id, ...last } = await this.get(`/${encodeURIComponent(id)}`);
+  getTrack = async (id: string): Promise<ITrackWithIds> => {
+    const track = await this.get(`/${encodeURIComponent(id)}`);
 
-    return { id: _id, ...last };
+    return this.changeTrackKeysName(track);
   };
 
-  addTrack = async (options: ITrackOptions): Promise<ITrack> => {
-    const { _id, ...last } = await this.post('', options);
+  addTrack = async (options: ITrackOptions): Promise<ITrackWithIds> => {
+    const track = await this.post('', options);
 
-    return { id: _id, ...last };
+    return this.changeTrackKeysName(track);
   };
 
-  updateTrack = async ({ id, inputOptions }: IUpdateOptions<ITrackOptions>): Promise<ITrack> => {
-    const { _id, ...last } = await this.put(`/${encodeURIComponent(id)}`, inputOptions);
+  updateTrack = async ({
+    id,
+    inputOptions,
+  }: IUpdateOptions<ITrackOptions>): Promise<ITrackWithIds> => {
+    const track = await this.put(`/${encodeURIComponent(id)}`, inputOptions);
 
-    return { id: _id, ...last };
+    return this.changeTrackKeysName(track);
   };
 
   removeTrack = async (id: string): Promise<IDeleteResponse> => {
-    const data = await this.delete(`/${encodeURIComponent(id)}`);
-
-    return data;
+    return await this.delete(`/${encodeURIComponent(id)}`);
   };
 }
 

@@ -26,7 +26,6 @@ export interface IPaginationOptions {
   offset?: number;
 }
 
-
 export interface IAddAOptions<T> {
   inputOptions: T;
 }
@@ -37,6 +36,10 @@ export interface IUpdateOptions<T> {
 }
 
 export interface IDeleteResponse {
-  acknowledged: boolean
-  deletedCount: number
+  acknowledged: boolean;
+  deletedCount: number;
+}
+
+export interface IItemGetOptions {
+  id: string;
 }

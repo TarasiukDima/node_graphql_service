@@ -11,12 +11,21 @@ export interface ITrackOptions {
   genres: IGenre;
 }
 
-export interface ITrack {
+interface ICommonTrack {
   id: string;
   title: string;
   duration: number;
   released: number;
-  albums: IAlbum;
-  bands: IBand;
-  genres: IGenre;
+}
+
+export interface ITrack extends ICommonTrack {
+  albums: Array<IAlbum | string>;
+  bands: Array<IBand | string>;
+  genres: Array<IGenre | string>;
+}
+
+export interface ITrackWithIds extends ICommonTrack {
+  albums: Array<string>;
+  bands: Array<string>;
+  genres: Array<string>;
 }

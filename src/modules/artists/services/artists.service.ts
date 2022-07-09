@@ -1,16 +1,28 @@
 import { RequestOptions, RESTDataSource } from 'apollo-datasource-rest';
 import { IDeleteResponse, IPaginationOptions, IUpdateOptions } from 'src/types';
-import { IArtist, IArtistOptions } from '../artists.types';
+import { IArtistOptions, IArtistWithIDS } from '../artists.types';
 
 export interface IArtistsService extends RESTDataSource {
   baseURL?: string | undefined;
 
-  getArtists: (options: IPaginationOptions) => Promise<Array<IArtist>>;
-  getArtist: (id: string) => Promise<IArtist>;
+  getArtists: (options: IPaginationOptions) => Promise<Array<IArtistWithIDS>>;
+  getArtist: (id: string) => Promise<IArtistWithIDS>;
 
-  addArtist: (options: IArtistOptions) => Promise<IArtist>;
-  updateArtist: (options: IUpdateOptions<IArtistOptions>) => Promise<IArtist>;
+  addArtist: (options: IArtistOptions) => Promise<IArtistWithIDS>;
+  updateArtist: (options: IUpdateOptions<IArtistOptions>) => Promise<IArtistWithIDS>;
   removeArtist: (id: string) => Promise<IDeleteResponse>;
+}
+
+interface IArtistResponse {
+  _id: string;
+  firstName: string;
+  secondName: string;
+  middleName: string;
+  birthDate: string;
+  birthPlace: string;
+  country: string;
+  bandsIds: Array<string>;
+  instruments: Array<string>;
 }
 
 class ArtistsService extends RESTDataSource implements IArtistsService {
@@ -23,39 +35,50 @@ class ArtistsService extends RESTDataSource implements IArtistsService {
     request.headers.set('Authorization', this.context.token);
   };
 
-  getArtists = async (options: IPaginationOptions): Promise<Array<IArtist>> => {
+  private changeArtistKeysName = (object: IArtistResponse): IArtistWithIDS => {
+    return {
+      id: object._id,
+      firstName: object.firstName,
+      secondName: object.secondName,
+      middleName: object.middleName,
+      birthDate: object.birthDate,
+      birthPlace: object.birthPlace,
+      country: object.country,
+      instruments: object.instruments,
+      bands: object.bandsIds,
+    };
+  };
+
+  getArtists = async (options: IPaginationOptions): Promise<Array<IArtistWithIDS>> => {
     const data = await this.get('', { ...options });
+    const artists = [...data.items].map((oneArtist) => this.changeArtistKeysName(oneArtist));
 
-    const Artists = [...data.items].map((oneArtist) => {
-      oneArtist.id = oneArtist._id;
-      return oneArtist;
-    });
-
-    return Artists;
+    return artists;
   };
 
-  getArtist = async (id: string): Promise<IArtist> => {
-    const { _id, ...last } = await this.get(`/${encodeURIComponent(id)}`);
+  getArtist = async (id: string): Promise<IArtistWithIDS> => {
+    const artist = await this.get(`/${encodeURIComponent(id)}`);
 
-    return { id: _id, ...last };
+    return this.changeArtistKeysName(artist);
   };
 
-  addArtist = async (options: IArtistOptions): Promise<IArtist> => {
-    const { _id, ...last } = await this.post('', options);
+  addArtist = async (options: IArtistOptions): Promise<IArtistWithIDS> => {
+    const artist = await this.post('', options);
 
-    return { id: _id, ...last };
+    return this.changeArtistKeysName(artist);
   };
 
-  updateArtist = async ({ id, inputOptions }: IUpdateOptions<IArtistOptions>): Promise<IArtist> => {
-    const { _id, ...last } = await this.put(`/${encodeURIComponent(id)}`, inputOptions);
+  updateArtist = async ({
+    id,
+    inputOptions,
+  }: IUpdateOptions<IArtistOptions>): Promise<IArtistWithIDS> => {
+    const artist = await this.put(`/${encodeURIComponent(id)}`, inputOptions);
 
-    return { id: _id, ...last };
+    return this.changeArtistKeysName(artist);
   };
 
   removeArtist = async (id: string): Promise<IDeleteResponse> => {
-    const data = await this.delete(`/${encodeURIComponent(id)}`);
-
-    return data;
+    return await this.delete(`/${encodeURIComponent(id)}`);
   };
 }
 

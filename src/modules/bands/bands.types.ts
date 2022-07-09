@@ -10,17 +10,23 @@ export interface IBandOptions {
 }
 
 export interface IMember {
-  id: string;
-  artist: IArtist;
+  artist: IArtist | string;
   instrument: string;
   years: Array<string>;
 }
 
-export interface IBand {
+interface ICommonBand {
   id: string;
   name: string;
   origin: string;
-  members: IMember;
+  members: Array<IMember>;
   website: string;
-  genres: IGenre;
+}
+
+export interface IBand extends ICommonBand {
+  genres: Array<IGenre | string>;
+}
+
+export interface IBandWithIds extends ICommonBand {
+  genres: Array<string>;
 }

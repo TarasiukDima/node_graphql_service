@@ -1,28 +1,67 @@
+import { getBandsArray } from '../../utils/index';
 import {
   IAddAOptions,
   IContext,
   IDeleteResponse,
+  IItemGetOptions,
   IPaginationOptions,
+  IServices,
   IUpdateOptions,
 } from '../../../types/index';
-import { IArtist, IArtistOptions } from '../artists.types';
+import { IArtist, IArtistOptions, IArtistWithIDS } from '../artists.types';
+
+const getArtistInfoObjects = async (
+  oneArtist: IArtistWithIDS,
+  dataSources: IServices
+): Promise<IArtist> => {
+  return {
+    id: oneArtist.id,
+    firstName: oneArtist.firstName,
+    secondName: oneArtist.secondName,
+    middleName: oneArtist.middleName,
+    birthDate: oneArtist.birthDate,
+    birthPlace: oneArtist.birthPlace,
+    country: oneArtist.country,
+    instruments: oneArtist.instruments,
+    bands: await getBandsArray(oneArtist.bands, dataSources.bandsService, dataSources),
+  };
+};
+
+const getArrayArtistsWithIdsObjects = async (
+  array: Array<IArtistWithIDS>,
+  dataSources: IServices
+): Promise<Array<IArtist>> => {
+  const promisesAlbumsArray = array.map(
+    async (oneArtist) => await getArtistInfoObjects(oneArtist, dataSources)
+  );
+  const albumsAnswers = await Promise.allSettled(promisesAlbumsArray);
+  const newAlbums = albumsAnswers.map((res) => (res.status === 'fulfilled' ? res.value : null));
+
+  return newAlbums.filter((el) => el) as Array<IArtist>;
+};
 
 export const artistsResolvers = {
   Query: {
     getArtists: async (
       _: any,
       options: IPaginationOptions,
-      { dataSources: { artistsService } }: IContext
+      { dataSources }: IContext
     ): Promise<Array<IArtist>> => {
-      return await artistsService.getArtists(options);
+      const artistsWithIds = await dataSources.artistsService.getArtists(options);
+      const albums = await getArrayArtistsWithIdsObjects(artistsWithIds, dataSources);
+
+      return albums;
     },
 
     getArtist: async (
       _: any,
-      { id }: IArtist,
-      { dataSources: { artistsService } }: IContext
+      { id }: IItemGetOptions,
+      { dataSources }: IContext
     ): Promise<IArtist> => {
-      return await artistsService.getArtist(id);
+      const artistWithIds = await dataSources.artistsService.getArtist(id);
+      const artist = await getArtistInfoObjects(artistWithIds, dataSources);
+
+      return artist;
     },
   },
 
@@ -30,25 +69,31 @@ export const artistsResolvers = {
     addArtist: async (
       _: any,
       { inputOptions }: IAddAOptions<IArtistOptions>,
-      { token, dataSources: { artistsService } }: IContext
+      { token, dataSources }: IContext
     ): Promise<IArtist | null> => {
       if (!token) {
         return null;
       }
 
-      return await artistsService.addArtist(inputOptions);
+      const artistWithIds = await dataSources.artistsService.addArtist(inputOptions);
+      const artist = await getArtistInfoObjects(artistWithIds, dataSources);
+
+      return artist;
     },
 
     updateArtist: async (
       _: any,
       options: IUpdateOptions<IArtistOptions>,
-      { token, dataSources: { artistsService } }: IContext
+      { token, dataSources }: IContext
     ): Promise<IArtist | null> => {
       if (!token) {
         return null;
       }
 
-      return await artistsService.updateArtist(options);
+      const artistWithIds = await dataSources.artistsService.updateArtist(options);
+      const artist = await getArtistInfoObjects(artistWithIds, dataSources);
+
+      return artist;
     },
 
     removeArtist: async (
@@ -56,11 +101,7 @@ export const artistsResolvers = {
       { id }: IArtist,
       { token, dataSources: { artistsService } }: IContext
     ): Promise<IDeleteResponse | null> => {
-      if (!token) {
-        return null;
-      }
-
-      return await artistsService.removeArtist(id);
+      return !token ? null : await artistsService.removeArtist(id);
     },
   },
 };

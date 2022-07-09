@@ -23,8 +23,6 @@ export const usersResolvers = {
       { inputOptions }: IAddAOptions<IRegistrationUserOptions>,
       { dataSources: { usersService } }: IContext
     ): Promise<IUser> => {
-      console.log(inputOptions);
-
       return await usersService.registrationUser(inputOptions);
     },
 

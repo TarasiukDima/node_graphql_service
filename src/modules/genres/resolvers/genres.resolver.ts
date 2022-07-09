@@ -2,6 +2,7 @@ import {
   IAddAOptions,
   IContext,
   IDeleteResponse,
+  IItemGetOptions,
   IPaginationOptions,
   IUpdateOptions,
 } from '../../../types/index';
@@ -19,7 +20,7 @@ export const genresResolvers = {
 
     getGenre: async (
       _: any,
-      { id }: IGenre,
+      { id }: IItemGetOptions,
       { dataSources: { genresService } }: IContext
     ): Promise<IGenre> => {
       return await genresService.getGenre(id);

@@ -3,11 +3,6 @@ import { IBand } from '../bands/bands.types';
 import { IGenre } from '../genres/genres.types';
 import { ITrack } from '../tracks/track.types';
 
-export interface IGetAlbumsOptions {
-  limit?: number;
-  offset?: number;
-}
-
 export interface IAlbumOptions {
   name: string;
   released?: number;
@@ -18,13 +13,23 @@ export interface IAlbumOptions {
   image?: string;
 }
 
-export interface IAlbum {
+interface ICommonAlbum {
   id: string;
   name: string;
   released: number;
-  artists: IArtist;
-  bands: IBand;
-  tracks: ITrack;
-  genres: IGenre;
   image: string;
+}
+
+export interface IAlbum extends ICommonAlbum {
+  artists: Array<IArtist | string>;
+  bands: Array<IBand | string>;
+  tracks: Array<ITrack | string>;
+  genres: Array<IGenre | string>;
+}
+
+export interface IAlbumWithIDS extends ICommonAlbum {
+  artists: Array<string>;
+  bands: Array<string>;
+  tracks: Array<string>;
+  genres: Array<string>;
 }

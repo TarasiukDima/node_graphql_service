@@ -13,6 +13,14 @@ export interface IGenresService extends RESTDataSource {
   removeGenre: (id: string) => Promise<IDeleteResponse>;
 }
 
+interface IGenreResponse {
+  _id: string;
+  name: string;
+  description: string;
+  country: string;
+  year: number;
+}
+
 class GenresService extends RESTDataSource implements IGenresService {
   constructor() {
     super();
@@ -23,39 +31,42 @@ class GenresService extends RESTDataSource implements IGenresService {
     request.headers.set('Authorization', this.context.token);
   };
 
+  private changeGenreKeysName = (object: IGenreResponse): IGenre => {
+    return {
+      id: object._id,
+      name: object.name,
+      description: object.description,
+      country: object.country,
+      year: object.year,
+    };
+  };
+
   getGenres = async (options: IPaginationOptions): Promise<Array<IGenre>> => {
     const data = await this.get('', { ...options });
 
-    const Genres = [...data.items].map((oneGenre) => {
-      oneGenre.id = oneGenre._id;
-      return oneGenre;
-    });
-
-    return Genres;
+    return [...data.items].map((oneGenre) => this.changeGenreKeysName(oneGenre));
   };
 
   getGenre = async (id: string): Promise<IGenre> => {
-    const { _id, ...last } = await this.get(`/${encodeURIComponent(id)}`);
+    const genre = await this.get(`/${encodeURIComponent(id)}`);
 
-    return { id: _id, ...last };
+    return this.changeGenreKeysName(genre);
   };
 
   addGenre = async (options: IGenreOptions): Promise<IGenre> => {
-    const { _id, ...last } = await this.post('', options);
+    const genre = await this.post('', options);
 
-    return { id: _id, ...last };
+    return this.changeGenreKeysName(genre);
   };
 
   updateGenre = async ({ id, inputOptions }: IUpdateOptions<IGenreOptions>): Promise<IGenre> => {
-    const { _id, ...last } = await this.put(`/${encodeURIComponent(id)}`, inputOptions);
+    const genre = await this.put(`/${encodeURIComponent(id)}`, inputOptions);
 
-    return { id: _id, ...last };
+    return this.changeGenreKeysName(genre);
   };
 
   removeGenre = async (id: string): Promise<IDeleteResponse> => {
-    const data = await this.delete(`/${encodeURIComponent(id)}`);
-
-    return data;
+    return await this.delete(`/${encodeURIComponent(id)}`);
   };
 }
 

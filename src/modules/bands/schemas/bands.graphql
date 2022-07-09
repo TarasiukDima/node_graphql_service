@@ -15,13 +15,13 @@ type Query {
 type Member {
   artist: Artist!
   instrument: String
-  years: [String]
+  years: String
 }
 
 input MemberOptions {
   artist: ID!
   instrument: String
-  years: [String]
+  years: String
 }
 
 input BandOptions {
