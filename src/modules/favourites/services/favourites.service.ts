@@ -1,26 +1,45 @@
 import { RequestOptions, RESTDataSource } from 'apollo-datasource-rest';
-import { IPaginationOptions } from 'src/types';
-import { IFavourites } from '../favourites.types';
+import { IFavouritesWithIds } from '../favourites.types';
 
 enum FAVOURITES_POINTS {
-  add = 'add',
-  remove = 'remove',
+  add = '/add',
+  remove = '/remove',
 }
 
 export interface IFavouritesService extends RESTDataSource {
   baseURL?: string | undefined;
 
-  getFavourites: (options: IPaginationOptions) => Promise<IFavourites>;
+  getFavourites: () => Promise<IFavouritesWithIds>;
 
-  addTrackToFavourites: (id: string) => Promise<IFavourites>;
-  addBandToFavourites: (id: string) => Promise<IFavourites>;
-  addArtistToFavourites: (id: string) => Promise<IFavourites>;
-  addGenreToFavourites: (id: string) => Promise<IFavourites>;
+  addTrackToFavourites: (id: string) => Promise<IFavouritesWithIds>;
+  addBandToFavourites: (id: string) => Promise<IFavouritesWithIds>;
+  addArtistToFavourites: (id: string) => Promise<IFavouritesWithIds>;
+  addGenreToFavourites: (id: string) => Promise<IFavouritesWithIds>;
 
-  removeTrackFromFavourites: (id: string) => Promise<IFavourites>;
-  removeBandFromFavourites: (id: string) => Promise<IFavourites>;
-  removeArtistFromFavourites: (id: string) => Promise<IFavourites>;
-  removeGenreFromFavourites: (id: string) => Promise<IFavourites>;
+  removeTrackFromFavourites: (id: string) => Promise<IFavouritesWithIds>;
+  removeBandFromFavourites: (id: string) => Promise<IFavouritesWithIds>;
+  removeArtistFromFavourites: (id: string) => Promise<IFavouritesWithIds>;
+  removeGenreFromFavourites: (id: string) => Promise<IFavouritesWithIds>;
+}
+
+interface IFavouritesResponse {
+  _id: string;
+  userId: string;
+  bandsIds: Array<string>;
+  genresIds: Array<string>;
+  artistsIds: Array<string>;
+  tracksIds: Array<string>;
+}
+
+enum FavouritesVariants {
+  addBand = 'bands',
+  addGenre = 'genres',
+  addArtist = 'artists',
+  addTrack = 'tracks',
+  removeBand = 'bands',
+  removeGenre = 'genres',
+  removeArtist = 'artists',
+  removeTrack = 'tracks',
 }
 
 class FavouritesService extends RESTDataSource implements IFavouritesService {
@@ -33,63 +52,91 @@ class FavouritesService extends RESTDataSource implements IFavouritesService {
     request.headers.set('Authorization', this.context.token);
   };
 
-  getFavourites = async (options: IPaginationOptions): Promise<IFavourites> => {
-    const data = await this.get('', { ...options });
-
-    // const Bands = [...data.items].map((oneBand) => {
-    //   oneBand.id = oneBand._id;
-    //   return oneBand;
-    // });
-
-    return data;
+  private changeFavouritesKeysName = (object: IFavouritesResponse): IFavouritesWithIds => {
+    return {
+      id: object._id,
+      userId: object.userId,
+      bands: object.bandsIds,
+      genres: object.genresIds,
+      artists: object.artistsIds,
+      tracks: object.tracksIds,
+    };
   };
 
-  addTrackToFavourites = async (id: string): Promise<IFavourites> => {
-    const { _id, ...last } = await this.put(FAVOURITES_POINTS.add, id);
+  getFavourites = async (): Promise<IFavouritesWithIds> => {
+    const data = await this.get('');
+    const favourites = this.changeFavouritesKeysName(data);
 
-    return { id: _id, ...last };
+    return favourites;
   };
 
-  addBandToFavourites = async (id: string): Promise<IFavourites> => {
-    const { _id, ...last } = await this.put(FAVOURITES_POINTS.add, id);
+  addTrackToFavourites = async (id: string): Promise<IFavouritesWithIds> => {
+    const data = await this.put(FAVOURITES_POINTS.add, { id, type: FavouritesVariants.addTrack });
+    const favourites = this.changeFavouritesKeysName(data);
 
-    return { id: _id, ...last };
+    return favourites;
   };
 
-  addArtistToFavourites = async (id: string): Promise<IFavourites> => {
-    const { _id, ...last } = await this.put(FAVOURITES_POINTS.add, id);
+  addBandToFavourites = async (id: string): Promise<IFavouritesWithIds> => {
+    const data = await this.put(FAVOURITES_POINTS.add, { id, type: FavouritesVariants.addBand });
+    const favourites = this.changeFavouritesKeysName(data);
 
-    return { id: _id, ...last };
+    return favourites;
   };
 
-  addGenreToFavourites = async (id: string): Promise<IFavourites> => {
-    const { _id, ...last } = await this.put(FAVOURITES_POINTS.add, id);
+  addArtistToFavourites = async (id: string): Promise<IFavouritesWithIds> => {
+    const data = await this.put(FAVOURITES_POINTS.add, { id, type: FavouritesVariants.addArtist });
+    const favourites = this.changeFavouritesKeysName(data);
 
-    return { id: _id, ...last };
+    return favourites;
   };
 
-  removeTrackFromFavourites = async (id: string): Promise<IFavourites> => {
-    const data = await this.delete(`${FAVOURITES_POINTS.remove}/${encodeURIComponent(id)}`);
+  addGenreToFavourites = async (id: string): Promise<IFavouritesWithIds> => {
+    const data = await this.put(FAVOURITES_POINTS.add, { id, type: FavouritesVariants.addGenre });
+    const favourites = this.changeFavouritesKeysName(data);
 
-    return data;
+    return favourites;
   };
 
-  removeBandFromFavourites = async (id: string): Promise<IFavourites> => {
-    const data = await this.delete(`${FAVOURITES_POINTS.remove}/${encodeURIComponent(id)}`);
+  removeTrackFromFavourites = async (id: string): Promise<IFavouritesWithIds> => {
+    const data = await this.put(`${FAVOURITES_POINTS.remove}`, {
+      id,
+      type: FavouritesVariants.removeTrack,
+    });
 
-    return data;
+    const favourites = this.changeFavouritesKeysName(data);
+
+    return favourites;
   };
 
-  removeArtistFromFavourites = async (id: string): Promise<IFavourites> => {
-    const data = await this.delete(`${FAVOURITES_POINTS.remove}/${encodeURIComponent(id)}`);
+  removeBandFromFavourites = async (id: string): Promise<IFavouritesWithIds> => {
+    const data = await this.put(`${FAVOURITES_POINTS.remove}`, {
+      id,
+      type: FavouritesVariants.removeBand,
+    });
+    const favourites = this.changeFavouritesKeysName(data);
 
-    return data;
+    return favourites;
   };
 
-  removeGenreFromFavourites = async (id: string): Promise<IFavourites> => {
-    const data = await this.delete(`${FAVOURITES_POINTS.remove}/${encodeURIComponent(id)}`);
+  removeArtistFromFavourites = async (id: string): Promise<IFavouritesWithIds> => {
+    const data = await this.put(`${FAVOURITES_POINTS.remove}`, {
+      id,
+      type: FavouritesVariants.removeArtist,
+    });
+    const favourites = this.changeFavouritesKeysName(data);
 
-    return data;
+    return favourites;
+  };
+
+  removeGenreFromFavourites = async (id: string): Promise<IFavouritesWithIds> => {
+    const data = await this.put(`${FAVOURITES_POINTS.remove}`, {
+      id,
+      type: FavouritesVariants.removeGenre,
+    });
+    const favourites = this.changeFavouritesKeysName(data);
+
+    return favourites;
   };
 }
 

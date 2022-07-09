@@ -116,7 +116,7 @@ export const getAlbumsArray = async (
   albumService: IAlbumService,
   service: IServices
 ): Promise<Array<IAlbum>> => {
-  if (!array.length) return [];
+  if (!array || !array.length) return [];
 
   const albumsPromisesArray = array.map(async (oneAlbumId) => {
     const album = await albumService.getAlbum(oneAlbumId);
@@ -140,7 +140,7 @@ export const getArtistsArray = async (
   artistsService: IArtistsService,
   service: IServices
 ): Promise<Array<IArtist>> => {
-  if (!array.length) return [];
+  if (!array || !array.length) return [];
 
   const artistsPromisesArray = array.map(async (oneArtistId) => {
     const artist = await artistsService.getArtist(oneArtistId);
@@ -168,7 +168,7 @@ export const getBandsArray = async (
   bandsService: IBandsService,
   service: IServices
 ): Promise<Array<IBand>> => {
-  if (!array.length) return [];
+  if (!array || !array.length) return [];
 
   const bandsPromisesArray = array.map(async (oneBandId) => {
     const band = await bandsService.getBand(oneBandId);
@@ -189,7 +189,7 @@ export const getGenresArray = async (
   array: Array<string>,
   genresService: IGenresService
 ): Promise<Array<IGenre>> => {
-  if (!array.length) return [];
+  if (!array || !array.length) return [];
 
   const genresPromisesArray = array.map(
     async (oneGenreId) => await genresService.getGenre(oneGenreId)
@@ -205,7 +205,7 @@ export const getTracksArray = async (
   tracksService: ITracksService,
   service: IServices
 ): Promise<Array<ITrack>> => {
-  if (!array.length) return [];
+  if (!array || !array.length) return [];
 
   const tracksPromisesArray = array.map(async (oneTrackId) => {
     const track = await tracksService.getTrack(oneTrackId);
