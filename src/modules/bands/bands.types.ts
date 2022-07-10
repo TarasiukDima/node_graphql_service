@@ -14,7 +14,7 @@ export interface IMember {
   secondName: string;
   middleName: string;
   instrument: string;
-  years: [string];
+  years: Array<string>;
 }
 
 interface ICommonBand {
