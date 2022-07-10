@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { ApolloServer } from 'apollo-server';
+import depthLimit from 'graphql-depth-limit';
 import { typeDefs } from './graphql';
 import { resolvers } from './resolvers';
 import { services } from './services';
@@ -10,6 +11,7 @@ const startServer = async (): Promise<void> => {
   const server = new ApolloServer({
     typeDefs: await typeDefs(),
     resolvers,
+    validationRules: [depthLimit(5)],
     context: async ({ req }) => ({ token: req.headers.authorization || '' }),
     dataSources: () => ({ ...services }),
   });
