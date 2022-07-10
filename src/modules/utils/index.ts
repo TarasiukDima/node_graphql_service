@@ -9,7 +9,7 @@ import { genresResolvers } from '../genres/resolvers/genres.resolver';
 import { tracksResolvers } from '../tracks/resolvers/tracks.resolver';
 import { IAlbum } from '../albums/albums.types';
 import { IArtist } from '../artists/artists.types';
-import { IBand, IMember } from '../bands/bands.types';
+import { IBand } from '../bands/bands.types';
 import { IGenre } from '../genres/genres.types';
 import { ITrack } from '../tracks/track.types';
 import { IContext, IServices } from 'src/types';
@@ -79,24 +79,6 @@ const getTracks = async (array: Array<string>, service: IServices): Promise<Arra
   return tracksFull;
 };
 
-const getMembers = async (array: Array<IMember>, service: IServices): Promise<Array<IMember>> => {
-  if (!array || !array.length) return [];
-
-  const members = array.map(async (oneMember) => {
-    return {
-      ...oneMember,
-      artist: await artistsResolvers.Query.getArtist(null, { id: oneMember.artist as string }, {
-        dataSources: service,
-      } as IContext),
-    };
-  });
-
-  const membersAllInfo = await Promise.allSettled(members);
-  const membersFull = getArrayWithNotEmptyObjects<IMember>(membersAllInfo, 'artist');
-
-  return membersFull;
-};
-
 export const getAlbumObj = async (
   oneAlbumId: string,
   albumService: IAlbumService,
@@ -160,13 +142,6 @@ export const getArtistsArray = async (
   return artists;
 };
 
-export const getMembersArray = async (
-  array: Array<IMember>,
-  service: IServices
-): Promise<Array<IMember>> => {
-  return await getMembers(array, service);
-};
-
 export const getBandsArray = async (
   array: Array<string>,
   bandsService: IBandsService,
@@ -179,7 +154,6 @@ export const getBandsArray = async (
 
     return {
       ...band,
-      members: await getMembers(band.members, service),
       genres: await getGenres(band.genres, service),
     };
   });

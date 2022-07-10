@@ -1,4 +1,4 @@
-import { getArrayWithNotEmptyObjects, getGenresArray, getMembersArray } from '../../utils/index';
+import { getArrayWithNotEmptyObjects, getGenresArray } from '../../utils/index';
 import {
   IAddAOptions,
   IContext,
@@ -19,7 +19,7 @@ const getBandInfoObjects = async (
     name: oneBand.name,
     origin: oneBand.origin,
     website: oneBand.website,
-    members: await getMembersArray(oneBand.members, dataSources),
+    members: oneBand.members,
     genres: await getGenresArray(oneBand.genres, dataSources.genresService),
   };
 };

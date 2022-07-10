@@ -149,17 +149,23 @@
   }
 
   type Member {
-    artist: Artist!
+    id: ID!
+    firstName: String
+    secondName: String
+    middleName: String
     instrument: String
-    years: String
+    years: [String]
   }
 ```
 
 ```sh
   input MemberOptions {
-    artist: ID!
+    id: ID!
+    firstName: String
+    secondName: String
+    middleName: String
     instrument: String
-    years: String
+    years: [String]
   }
 
   input BandOptions {

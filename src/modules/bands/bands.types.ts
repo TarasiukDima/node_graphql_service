@@ -1,4 +1,3 @@
-import { IArtist } from '../artists/artists.types';
 import { IGenre } from '../genres/genres.types';
 
 export interface IBandOptions {
@@ -10,9 +9,12 @@ export interface IBandOptions {
 }
 
 export interface IMember {
-  artist: IArtist | string;
+  id: string;
+  firstName: string;
+  secondName: string;
+  middleName: string;
   instrument: string;
-  years: Array<string>;
+  years: [string];
 }
 
 interface ICommonBand {
