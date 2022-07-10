@@ -63,28 +63,28 @@
 **Schema:**
 
 ```sh
-    type Album {
-      id: ID!
-      name: String
-      released: Int
-      image: String
-      artists: [Artist]
-      bands: [Band]
-      tracks: [Track]
-      genres: [Genre]
-    }
+  type Album {
+    id: ID!
+    name: String
+    released: Int
+    image: String
+    artists: [Artist]
+    bands: [Band]
+    tracks: [Track]
+    genres: [Genre]
+  }
 ```
 
 ```sh
-    input AlbumOptions {
-      name: String!
-      released: Int
-      image: String
-      artistsIds: [ID!]
-      bandsIds: [ID!]
-      trackIds: [ID!]
-      genresIds: [ID!]
-    }
+  input AlbumOptions {
+    name: String!
+    released: Int
+    image: String
+    artistsIds: [ID!]
+    bandsIds: [ID!]
+    trackIds: [ID!]
+    genresIds: [ID!]
+  }
 ```
 
 #### Operations:
@@ -122,7 +122,7 @@
     birthPlace: String
     country: String
     instruments: [String!]
-    bands: [ID!]
+    bandsIds: [ID!]
   }
 ```
 
@@ -173,7 +173,7 @@
     origin: String
     website: String
     members: [MemberOptions!]
-    genres: [ID!]
+    genresIds: [ID!]
   }
 ```
 
@@ -266,10 +266,10 @@
     title: String!
     duration: Int
     released: Int
-    album: ID
-    artists: [ID!]
-    bands: [ID!]
-    genres: [ID!]
+    albumId: ID
+    artistsIds: [ID!]
+    bandsIds: [ID!]
+    genresIds: [ID!]
   }
 ```
 
