@@ -57,10 +57,7 @@ export const artistsResolvers = {
       _: any,
       { id }: IItemGetOptions,
       { dataSources }: IContext,
-      info?: any,
     ): Promise<IArtist> => {
-      console.log('info', info);
-
       const artistWithIds = await dataSources.artistsService.getArtist(id);
       const artist = await getArtistInfoObjects(artistWithIds, dataSources);
 

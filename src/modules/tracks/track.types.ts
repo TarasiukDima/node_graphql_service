@@ -1,4 +1,5 @@
 import { IAlbum } from '../albums/albums.types';
+import { IArtist } from '../artists/artists.types';
 import { IBand } from '../bands/bands.types';
 import { IGenre } from '../genres/genres.types';
 
@@ -6,9 +7,10 @@ export interface ITrackOptions {
   title: string;
   duration: number;
   released: number;
-  albums: IAlbum;
-  bands: IBand;
-  genres: IGenre;
+  album: IAlbum;
+  artists: Array<IArtist>;
+  bands: Array<IBand>;
+  genres: Array<IGenre>;
 }
 
 interface ICommonTrack {
@@ -19,13 +21,15 @@ interface ICommonTrack {
 }
 
 export interface ITrack extends ICommonTrack {
-  albums: Array<IAlbum | string>;
+  album: IAlbum | string;
+  artists: Array<IArtist | string>;
   bands: Array<IBand | string>;
   genres: Array<IGenre | string>;
 }
 
 export interface ITrackWithIds extends ICommonTrack {
-  albums: Array<string>;
+  album: string;
+  artists: Array<string>;
   bands: Array<string>;
   genres: Array<string>;
 }

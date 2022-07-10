@@ -18,7 +18,8 @@ interface ITrackResponse {
   title: string;
   duration: number;
   released: number;
-  albumsIds: Array<string>;
+  albumId: string;
+  artistsIds: Array<string>;
   bandsIds: Array<string>;
   genresIds: Array<string>;
 }
@@ -39,7 +40,8 @@ class TracksService extends RESTDataSource implements ITracksService {
       title: object.title,
       duration: object.duration,
       released: object.released,
-      albums: object.albumsIds,
+      album: object.albumId,
+      artists: object.artistsIds,
       bands: object.bandsIds,
       genres: object.genresIds,
     };

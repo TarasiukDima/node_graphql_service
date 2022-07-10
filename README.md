@@ -248,7 +248,8 @@
     title: String
     duration: Int
     released: Int
-    albums: [Album]
+    album: Album
+    artists: [Artist]
     bands: [Band]
     genres: [Genre]
   }
@@ -259,7 +260,8 @@
     title: String!
     duration: Int
     released: Int
-    albums: [ID!]
+    album: ID
+    artists: [ID!]
     bands: [ID!]
     genres: [ID!]
   }

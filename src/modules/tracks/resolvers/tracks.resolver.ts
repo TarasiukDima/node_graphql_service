@@ -1,6 +1,7 @@
 import {
-  getAlbumsArray,
+  getAlbumObj,
   getArrayWithNotEmptyObjects,
+  getArtistsArray,
   getBandsArray,
   getGenresArray,
 } from '../../utils/index';
@@ -14,18 +15,20 @@ import {
   IUpdateOptions,
 } from '../../../types/index';
 import { ITrack, ITrackOptions, ITrackWithIds } from '../track.types';
+import { IAlbum } from 'src/modules/albums/albums.types';
 
 const getTrackInfoObjects = async (
   oneTrack: ITrackWithIds,
   dataSources: IServices
 ): Promise<ITrack> => {
-  const { albumService, bandsService, genresService } = dataSources;
+  const { artistsService, albumService, bandsService, genresService } = dataSources;
   return {
     id: oneTrack.id,
     title: oneTrack.title,
     duration: oneTrack.duration,
     released: oneTrack.released,
-    albums: await getAlbumsArray(oneTrack.albums, albumService, dataSources),
+    album: await getAlbumObj(oneTrack.album, albumService, dataSources) as IAlbum,
+    artists: await getArtistsArray(oneTrack.artists, artistsService, dataSources),
     bands: await getBandsArray(oneTrack.bands, bandsService, dataSources),
     genres: await getGenresArray(oneTrack.genres, genresService),
   };

@@ -3,7 +3,6 @@ import { IArtistsService } from '../artists/services/artists.service';
 import { IBandsService } from '../bands/services/bands.service';
 import { IGenresService } from '../genres/services/genres.service';
 import { ITracksService } from '../tracks/services/tracks.service';
-import { albumsResolvers } from '../albums/resolvers/albums.resolver';
 import { artistsResolvers } from '../artists/resolvers/artists.resolver';
 import { bandsResolvers } from '../bands/resolvers/bands.resolver';
 import { genresResolvers } from '../genres/resolvers/genres.resolver';
@@ -26,19 +25,6 @@ export const getArrayWithNotEmptyObjects = <T>(
     .filter((el) => el);
 
   return goodArray as Array<T>;
-};
-
-const getAlbums = async (array: Array<string>, service: IServices): Promise<Array<IAlbum>> => {
-  if (!array || !array.length) return [];
-
-  const albums = array.map(
-    async (id) =>
-      await albumsResolvers.Query.getAlbum(null, { id }, { dataSources: service } as IContext)
-  );
-  const albumsAllInfo = await Promise.allSettled(albums);
-  const bandsFull = getArrayWithNotEmptyObjects<IAlbum>(albumsAllInfo, 'id');
-
-  return bandsFull;
 };
 
 const getArtists = async (array: Array<string>, service: IServices): Promise<Array<IArtist>> => {
@@ -109,6 +95,24 @@ const getMembers = async (array: Array<IMember>, service: IServices): Promise<Ar
   const membersFull = getArrayWithNotEmptyObjects<IMember>(membersAllInfo, 'artist');
 
   return membersFull;
+};
+
+export const getAlbumObj = async (
+  oneAlbumId: string,
+  albumService: IAlbumService,
+  service: IServices
+): Promise<IAlbum | null> => {
+  if (!oneAlbumId || !oneAlbumId.length) return null;
+
+  const album = await albumService.getAlbum(oneAlbumId);
+
+  return {
+    ...album,
+    artists: await getArtists(album.artists, service),
+    bands: await getBands(album.bands, service),
+    tracks: await getTracks(album.tracks, service),
+    genres: await getGenres(album.genres, service),
+  };
 };
 
 export const getAlbumsArray = async (
@@ -212,7 +216,8 @@ export const getTracksArray = async (
 
     return {
       ...track,
-      albums: await getAlbums(track.albums, service),
+      album: (await getAlbumObj(track.album, service.albumService, service)) as IAlbum,
+      artists: await getArtists(track.artists, service),
       bands: await getBands(track.bands, service),
       genres: await getGenres(track.genres, service),
     };
