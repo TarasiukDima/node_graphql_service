@@ -5,7 +5,7 @@ export interface IBandOptions {
   origin: string;
   members: Array<String>;
   website: string;
-  genres: IGenre;
+  genresIds: IGenre;
 }
 
 export interface IMember {

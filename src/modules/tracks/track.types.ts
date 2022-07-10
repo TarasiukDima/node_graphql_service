@@ -7,10 +7,10 @@ export interface ITrackOptions {
   title: string;
   duration: number;
   released: number;
-  album: IAlbum;
-  artists: Array<IArtist>;
-  bands: Array<IBand>;
-  genres: Array<IGenre>;
+  albumId: string;
+  artistsIds: Array<string>;
+  bandsIds: Array<string>;
+  genresIds: Array<string>;
 }
 
 interface ICommonTrack {

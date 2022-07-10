@@ -1,13 +1,14 @@
 import { IBand } from '../bands/bands.types';
 
 export interface IArtistOptions {
-  name: string;
-  released?: number;
-  artists?: Array<string>;
-  bands?: Array<string>;
-  tracks?: Array<string>;
-  genres?: Array<string>;
-  image?: string;
+  firstName: string;
+  secondName?: string;
+  middleName?: string;
+  birthDate?: string;
+  birthPlace?: string;
+  country?: string;
+  bandsIds?: Array<string>;
+  instruments?: Array<string>;
 }
 
 interface ICommonArtist {

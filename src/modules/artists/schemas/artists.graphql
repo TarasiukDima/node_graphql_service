@@ -23,7 +23,7 @@ input ArtistOptions {
   birthPlace: String
   country: String
   instruments: [String!]
-  bands: [ID!]
+  bandsIds: [ID!]
 }
 
 type DeleteArtist {

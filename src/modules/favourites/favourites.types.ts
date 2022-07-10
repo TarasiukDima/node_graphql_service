@@ -5,10 +5,10 @@ import { ITrack } from '../tracks/track.types';
 
 export interface IFavouritesOptions {
   userId: string;
-  bands: IBand;
-  genres: IGenre;
-  artists: IArtist;
-  tracks: ITrack;
+  bandsIds: Array<string>;
+  genresIds: Array<string>;
+  artistsIds: Array<string>;
+  tracksIds: Array<string>;
 }
 
 export interface IFavourites {

@@ -35,7 +35,7 @@ input BandOptions {
   origin: String
   website: String
   members: [MemberOptions!]
-  genres: [ID!]
+  genresIds: [ID!]
 }
 
 type DeleteBand {

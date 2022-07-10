@@ -18,10 +18,10 @@ input TrackOptions {
   title: String!
   duration: Int
   released: Int
-  album: ID
-  artists: [ID!]
-  bands: [ID!]
-  genres: [ID!]
+  albumId: ID
+  artistsIds: [ID!]
+  bandsIds: [ID!]
+  genresIds: [ID!]
 }
 
 type DeleteTrack {
